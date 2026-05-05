@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Office Compliment Generator</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --card: #1a1a24;
+      --card2: #22222f;
+      --border: #2e2e3e;
+      --accent: #7c5cfc;
+      --accent2: #ff6b9d;
+      --accent3: #00d4aa;
+      --text: #f0f0f8;
+      --muted: #8888aa;
+      --success: #00d4aa;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 4rem;
+      background-image:
+        radial-gradient(ellipse 60% 40% at 20% -10%, rgba(124,92,252,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 110%, rgba(255,107,157,0.12) 0%, transparent 60%);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      animation: fadeDown 0.6s ease both;
+    }
+
+    .emoji-crown { font-size: 2.8rem; display: block; margin-bottom: 0.5rem; }
+
+    h1 {
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #7c5cfc 0%, #ff6b9d 55%, #00d4aa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+    }
+
+    .tagline {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 0.6rem;
+      font-weight: 400;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 560px;
+      animation: fadeUp 0.6s ease 0.1s both;
+      box-shadow: 0 0 60px rgba(124,92,252,0.08);
+    }
+
+    .form-group { margin-bottom: 1.25rem; }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.45rem;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+      padding: 0.75rem 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(124,92,252,0.15);
+    }
+
+    input::placeholder { color: #555570; }
+
+    .tone-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+
+    .tone-option { display: none; }
+
+    .tone-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      background: var(--card2);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 0.8rem 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .tone-label:hover { border-color: var(--accent); background: rgba(124,92,252,0.08); }
+
+    .tone-option:checked + .tone-label {
+      border-color: var(--accent);
+      background: rgba(124,92,252,0.15);
+      box-shadow: 0 0 0 3px rgba(124,92,252,0.1);
+    }
+
+    .tone-emoji { font-size: 1.4rem; }
+    .tone-name { font-size: 0.75rem; font-weight: 600; color: var(--text); }
+    .tone-desc { font-size: 0.65rem; color: var(--muted); line-height: 1.3; }
+
+    .btn {
+      width: 100%;
+      padding: 0.9rem;
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.02em;
+      margin-top: 0.5rem;
+      background: linear-gradient(135deg, #7c5cfc, #ff6b9d);
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(124,92,252,0.35);
+    }
+
+    .btn:active:not(:disabled) { transform: translateY(0); }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto;
+    }
+
+    .btn.loading .btn-text { display: none; }
+    .btn.loading .spinner { display: block; }
+
+    .result-card {
+      display: none;
+      margin-top: 1.5rem;
+      background: linear-gradient(135deg, rgba(124,92,252,0.12), rgba(255,107,157,0.08));
+      border: 1px solid rgba(124,92,252,0.35);
+      border-radius: 16px;
+      padding: 1.5rem;
+      animation: fadeUp 0.4s ease both;
+      position: relative;
+    }
+
+    .result-card.visible { display: block; }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+    }
+
+    .result-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 1.5s ease infinite;
+    }
+
+    #compliment-text {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--text);
+      font-weight: 400;
+    }
+
+    .copy-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 1.2rem;
+      padding: 0.55rem 1rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+    .copy-btn.copied { color: var(--success); border-color: var(--success); }
+
+    .error-msg {
+      display: none;
+      color: #ff6b6b;
+      background: rgba(255,107,107,0.1);
+      border: 1px solid rgba(255,107,107,0.25);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .error-msg.visible { display: block; }
+
+    footer {
+      margin-top: 2.5rem;
+      color: #44445a;
+      font-size: 0.75rem;
+      text-align: center;
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="emoji-crown">🏆</span>
+  <h1>Office Compliment Generator</h1>
+  <p class="tagline">Because "good job" is criminally lazy. Powered by Grok AI.</p>
+</header>
+
+<div class="card">
+  <div class="form-group">
+    <label for="name">Colleague's Name</label>
+    <input type="text" id="name" placeholder="e.g. Priya, Dave, The intern..." />
+  </div>
+
+  <div class="form-group">
+    <label for="role">Their Role / Job Title</label>
+    <input type="text" id="role" placeholder="e.g. Senior Developer, HR Manager, Office Plant Whisperer..." />
+  </div>
+
+  <div class="form-group">
+    <label for="trait">Standout Trait (optional)</label>
+    <input type="text" id="trait" placeholder="e.g. always first to reply, fixes bugs before coffee..." />
+  </div>
+
+  <div class="form-group">
+    <label>Compliment Tone</label>
+    <div class="tone-grid">
+      <div>
+        <input type="radio" name="tone" id="tone-roasty" value="roasty" class="tone-option" checked />
+        <label for="tone-roasty" class="tone-label">
+          <span class="tone-emoji">🔥</span>
+          <span class="tone-name">Playfully Roasty</span>
+          <span class="tone-desc">Funny, sarcastic & secretly sweet</span>
+        </label>
+      </div>
+      <div>
+        <input type="radio" name="tone" id="tone-warm-funny" value="warm-funny" class="tone-option" />
+        <label for="tone-warm-funny" class="tone-label">
+          <span class="tone-emoji">😄</span>
+          <span class="tone-name">Warm & Funny</span>
+          <span class="tone-desc">Wholesome laughs, big feelings</span>
+        </label>
+      </div>
+      <div>
+        <input type="radio" name="tone" id="tone-heartfelt" value="heartfelt" class="tone-option" />
+        <label for="tone-heartfelt" class="tone-label">
+          <span class="tone-emoji">💜</span>
+          <span class="tone-name">Heartfelt</span>
+          <span class="tone-desc">Sincere, genuine, may cause tears</span>
+        </label>
+      </div>
+      <div>
+        <input type="radio" name="tone" id="tone-professional" value="professional" class="tone-option" />
+        <label for="tone-professional" class="tone-label">
+          <span class="tone-emoji">💼</span>
+          <span class="tone-name">Professional</span>
+          <span class="tone-desc">LinkedIn-safe, still charming</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn" id="generate-btn" onclick="generateCompliment()">
+    <span class="btn-text">Generate Compliment ✨</span>
+    <span class="spinner"></span>
+  </button>
+
+  <div class="error-msg" id="error-msg"></div>
+
+  <div class="result-card" id="result-card">
+    <div class="result-header">
+      <div class="result-dot"></div>
+      Fresh Compliment
+    </div>
+    <p id="compliment-text"></p>
+    <button class="copy-btn" id="copy-btn" onclick="copyCompliment()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+      Copy to Clipboard
+    </button>
+  </div>
+</div>
+
+<footer>Made with sarcasm and love &mdash; end your day on a high note</footer>
+
+<script>
+  async function generateCompliment() {
+    const name = document.getElementById('name').value.trim();
+    const role = document.getElementById('role').value.trim();
+    const trait = document.getElementById('trait').value.trim();
+    const tone = document.querySelector('input[name="tone"]:checked').value;
+
+    const btn = document.getElementById('generate-btn');
+    const errorMsg = document.getElementById('error-msg');
+    const resultCard = document.getElementById('result-card');
+
+    errorMsg.classList.remove('visible');
+    resultCard.classList.remove('visible');
+
+    if (!name) { showError('Please enter your colleague\'s name.'); return; }
+    if (!role)  { showError('Please enter their role.'); return; }
+
+    btn.disabled = true;
+    btn.classList.add('loading');
+
+    try {
+      const res = await fetch('/api/compliment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, role, trait, tone }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        showError(data.error || 'Something went wrong. Try again!');
+        return;
+      }
+
+      document.getElementById('compliment-text').textContent = data.compliment;
+      resultCard.classList.add('visible');
+
+      const copyBtn = document.getElementById('copy-btn');
+      copyBtn.textContent = '';
+      copyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy to Clipboard`;
+      copyBtn.classList.remove('copied');
+
+    } catch (err) {
+      showError('Network error — is the server running?');
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove('loading');
+    }
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('error-msg');
+    el.textContent = msg;
+    el.classList.add('visible');
+  }
+
+  async function copyCompliment() {
+    const text = document.getElementById('compliment-text').textContent;
+    const btn = document.getElementById('copy-btn');
+    try {
+      await navigator.clipboard.writeText(text);
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!`;
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy to Clipboard`;
+        btn.classList.remove('copied');
+      }, 2000);
+    } catch {
+      btn.textContent = 'Copy failed';
+    }
+  }
+
+  document.getElementById('name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') generateCompliment();
+  });
+  document.getElementById('role').addEventListener('keydown', e => {
+    if (e.key === 'Enter') generateCompliment();
+  });
+</script>
+</body>
+</html>
