@@ -26,16 +26,17 @@ exports.handler = async (event) => {
   const toneGuide = toneInstructions[tone] || toneInstructions['roasty'];
   const traitLine = trait ? ` They are known for being: ${trait}.` : '';
 
-  const prompt = `Generate a single, creative office compliment for a colleague named ${name} who works as a ${role}.${traitLine}
+  const prompt = `Write a witty office compliment for ${name}, a ${role}.${traitLine}
 
-Tone guide: ${toneGuide}
+Tone: ${toneGuide}
 
 Rules:
-- Keep it to 3–5 sentences max.
-- Make it feel personal and specific to their role.
-- End on a high note that would genuinely make someone's day.
-- No hashtags, no emojis, no bullet points — just flowing, witty prose.
-- Output ONLY the compliment text, nothing else.`;
+- 2 sentences MAX. Short, punchy, no fluff.
+- One sharp observation + one killer closing line.
+- Specific to their role — no generic praise.
+- Wit over warmth. Clever over cheesy.
+- No hashtags, emojis, or bullet points — just crisp prose.
+- Output ONLY the compliment, nothing else.`;
 
   // Detect which API to use based on key prefix
   const apiKey = process.env.GROK_API_KEY || '';
