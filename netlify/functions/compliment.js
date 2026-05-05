@@ -39,6 +39,11 @@ Rules:
 
   // Detect which API to use based on key prefix
   const apiKey = process.env.GROK_API_KEY || '';
+
+  if (!apiKey) {
+    return { statusCode: 500, body: JSON.stringify({ error: 'GROK_API_KEY environment variable is not set in Netlify.' }) };
+  }
+
   const isGroq = apiKey.startsWith('gsk_');
 
   const apiUrl = isGroq
