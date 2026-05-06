@@ -21,20 +21,25 @@ app.post('/api/compliment', async (req, res) => {
     'warm-funny': 'Be warm, wholesome, and genuinely funny — light humour that makes someone smile and feel appreciated.',
     'heartfelt': 'Be sincere, touching, and deeply heartfelt — the kind of thing that would make someone tear up in a good way.',
     'roasty': 'Be playfully sarcastic and roast them gently — funny, slightly savage but ultimately affectionate. Make it the highlight of their day. Deadpan delivery, unexpected comparisons, absurdist humour.',
-    'professional': 'Be polished and professional — appropriate for a work Slack or LinkedIn shoutout, but still charming.',
+    'professional': 'Be polished and charming — appropriate for a card, a group chat shoutout, or a LinkedIn post, but still witty.',
   };
 
   const toneGuide = toneInstructions[tone] || toneInstructions['roasty'];
-  const traitLine = trait ? ` They are known for being: ${trait}.` : '';
+  const traitLine = trait ? ` They are known for: ${trait}.` : '';
 
-  const prompt = `Write a witty office compliment for ${name}, a ${role}.${traitLine}
+  // Detect if this is a personal relationship vs a job role
+  const personalRelationships = ['friend', 'best friend', 'mum', 'mom', 'dad', 'sister', 'brother', 'sibling', 'cousin', 'aunt', 'uncle', 'grandma', 'grandpa', 'partner', 'spouse', 'wife', 'husband', 'boyfriend', 'girlfriend', 'roommate', 'flatmate'];
+  const isPersonal = personalRelationships.some(r => role.toLowerCase().includes(r));
+  const context = isPersonal ? `your ${role}` : `a ${role}`;
+
+  const prompt = `Write a witty compliment for ${name}, who is ${context}.${traitLine}
 
 Tone: ${toneGuide}
 
 Rules:
 - 2 sentences MAX. Short, punchy, no fluff.
 - One sharp observation + one killer closing line.
-- Specific to their role — no generic praise.
+- Specific to who they are or what they do — no generic praise.
 - Wit over warmth. Clever over cheesy.
 - No hashtags, emojis, or bullet points — just crisp prose.
 - Output ONLY the compliment, nothing else.`;
@@ -51,7 +56,7 @@ Rules:
         messages: [
           {
             role: 'system',
-            content: 'You are a sharp, witty office compliment generator. You write short, punchy, memorable compliments that are funny and sarcastic but leave people feeling genuinely good about themselves and their day.',
+            content: 'You are a sharp, witty compliment generator for all kinds of people — colleagues, friends, family, anyone. You write short, punchy, memorable compliments that are funny and sarcastic but leave people feeling genuinely good about themselves and their day.',
           },
           { role: 'user', content: prompt },
         ],
@@ -81,5 +86,5 @@ Rules:
 });
 
 app.listen(PORT, () => {
-  console.log(`Office Compliments running at http://localhost:${PORT}`);
+  console.log(`Compliment Generator running at http://localhost:${PORT}`);
 });

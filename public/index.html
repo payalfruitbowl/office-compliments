@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title> Compliment Generator</title>
+  <title>Compliment Generator</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
 
@@ -312,24 +312,24 @@
 
 <header>
   <span class="emoji-crown">🏆</span>
-  <h1> Compliment Generator</h1>
-  <p class="tagline">Your colleagues deserve better than a thumbs up and a prayer. 🙏</p>
+  <h1>Compliment Generator</h1>
+  <p class="tagline">For the people in your life who deserve more than a heart react. 🙏</p>
 </header>
 
 <div class="card">
   <div class="form-group">
-    <label for="name">Colleague's Name</label>
-    <input type="text" id="name" placeholder="e.g. Priya, Dave, The intern..." />
+    <label for="name">Their Name</label>
+    <input type="text" id="name" placeholder="e.g. Priya, Dave, Mum, The intern..." />
   </div>
 
   <div class="form-group">
-    <label for="role">Their Role / Job Title</label>
-    <input type="text" id="role" placeholder="e.g. Senior Developer, HR Manager, Office Plant Whisperer..." />
+    <label for="role">Their Role / Relationship</label>
+    <input type="text" id="role" placeholder="e.g. Senior Developer, Best Friend, Mum, Office Plant Whisperer..." />
   </div>
 
   <div class="form-group">
     <label for="trait">Standout Trait (optional)</label>
-    <input type="text" id="trait" placeholder="e.g. always first to reply, fixes bugs before coffee..." />
+    <input type="text" id="trait" placeholder="e.g. always right, texts back in 0.3 seconds, stress-bakes at midnight..." />
   </div>
 
   <div class="form-group">
@@ -409,8 +409,8 @@
     errorMsg.classList.remove('visible');
     resultCard.classList.remove('visible');
 
-    if (!name) { showError('Please enter your colleague\'s name.'); return; }
-    if (!role)  { showError('Please enter their role.'); return; }
+    if (!name) { showError('Please enter their name.'); return; }
+    if (!role)  { showError('Please enter their role or relationship.'); return; }
 
     btn.disabled = true;
     btn.classList.add('loading');
